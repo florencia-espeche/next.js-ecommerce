@@ -43,11 +43,12 @@ const Main = styled.main`
 
 const Store: NextPage<StoreProps> = ({ router }) => {
   const productCode = router.query.id.split('-')[0];
-  console.log({ productCode });
+  // console.log({ productCode });
 
   const [product, setProduct] = useState({});
-
   const [infoProduct, setInfoProduct] = useState({});
+  const [stock, setStock] = useState([]);
+  const [price, setPrice] = useState('');
 
   // useEffect(() => {
   //   const getProduct = async (id) => getProductById(id);
@@ -113,6 +114,8 @@ const Store: NextPage<StoreProps> = ({ router }) => {
             if (stockPrice && productSku) {
               productSku.price = stockPrice.price;
               console.log(stockPrice);
+              setStock(stockPrice.stock);
+              setPrice(stockPrice.price);
               productSku.stock = stockPrice.stock;
             }
 
@@ -127,6 +130,8 @@ const Store: NextPage<StoreProps> = ({ router }) => {
   return (
     <Main>
       <div>{infoProduct.id}</div>
+      <div>{stock}</div>
+      <div>${parseInt(price) / 100}</div>
       <Link href='/'>Volver a Home</Link>
     </Main>
   );
