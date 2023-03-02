@@ -45,45 +45,88 @@ const Store: NextPage<StoreProps> = ({ router }) => {
   const productCode = router.query.id.split('-')[0];
   console.log({ productCode });
 
-  const [product, setProduct] = useState();
+  const [product, setProduct] = useState({});
+
+  const [infoProduct, setInfoProduct] = useState({});
+
+  // useEffect(() => {
+  //   const getProduct = async (id) => getProductById(id);
+  //   getProduct(productCode).then((product) => {
+  //     // console.log('PRODUCT', product);
+
+  //     setProduct(product);
+  //   });
+  // }, [productCode]);
 
   useEffect(() => {
-    const getProduct = async (id) => getProductById(id);
-    getProduct(productCode).then((product) => {
-      console.log('PRODUCT', product);
-
+    const getProduct = async (id) => {
+      const product = await getProductById(id);
       setProduct(product);
-    });
+    };
+    getProduct(productCode);
   }, [productCode]);
+
+  // useEffect(() => {
+  //   const getStockPrices = async (skuCode) => getStockPrice(skuCode);
+  //   if (product) {
+  //     console.log('PRODUCT 2', product);
+  //     // for each SKU, one network call
+  //     // this can be done using a better way
+  //     product.skus.forEach(async (sku) => {
+  //       // get ONE stock and price, for ONE sku
+  //       const stockPrice = await getStockPrices(sku.code);
+  //       setProduct((product) => {
+  //         // clone from lodash
+  //         const updatedProduct = _.clone(product);
+  //         const productSku = updatedProduct.skus.find(
+  //           (_sku) => _sku.code === sku.code
+  //         );
+  //         if (stockPrice && productSku) {
+  //           productSku.price = stockPrice.price;
+  //           console.log(stockPrice);
+  //           productSku.stock = stockPrice.stock;
+  //         }
+
+  //         setInfoProduct(updatedProduct);
+  //         return updatedProduct;
+  //       });
+  //     });
+  //   }
+  // }, [product?.id]);
 
   useEffect(() => {
     const getStockPrices = async (skuCode) => getStockPrice(skuCode);
     if (product) {
-      console.log(product);
+      console.log('PRODUCT 2', product);
       // for each SKU, one network call
       // this can be done using a better way
-      product.skus.forEach(async (sku) => {
-        // get ONE stock and price, for ONE sku
-        const stockPrice = await getStockPrices(sku.code);
-        setProduct((product) => {
-          // clone from lodash
-          const updatedProduct = _.clone(product);
-          const productSku = updatedProduct.skus.find(
-            (_sku) => _sku.code === sku.code
-          );
-          if (stockPrice && productSku) {
-            productSku.price = stockPrice.price;
-            console.log(stockPrice);
-            productSku.stock = stockPrice.stock;
-          }
-          return updatedProduct;
+      if (product && product.skus) {
+        product.skus.forEach(async (sku) => {
+          // get ONE stock and price, for ONE sku
+          const stockPrice = await getStockPrices(sku.code);
+          setProduct((product) => {
+            // clone from lodash
+            const updatedProduct = _.clone(product);
+            const productSku = updatedProduct.skus.find(
+              (_sku) => _sku.code === sku.code
+            );
+            if (stockPrice && productSku) {
+              productSku.price = stockPrice.price;
+              console.log(stockPrice);
+              productSku.stock = stockPrice.stock;
+            }
+
+            setInfoProduct(updatedProduct);
+            return updatedProduct;
+          });
         });
-      });
+      }
     }
   }, [product?.id]);
+
   return (
     <Main>
-      <div>{product.brand}</div>
+      <div>{infoProduct.id}</div>
       <Link href='/'>Volver a Home</Link>
     </Main>
   );

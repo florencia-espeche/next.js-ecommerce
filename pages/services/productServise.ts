@@ -5,10 +5,10 @@ export async function getProducts() {
 }
 
 export async function getProductById(id) {
-  console.log(id);
+  // console.log(id);
   const products = await getProducts();
-  console.log('1**', products);
+  // console.log('1**', products);
   const product = products.find((p) => String(p.id) === String(id));
-  console.log('2**', product);
+  // console.log('getProductById', product);
   return product;
 }
