@@ -2,9 +2,16 @@ import React from 'react';
 import styled from 'styled-components';
 
 interface ProductProps {
+  abv?: string;
   brand: string;
   image: string;
+  information?: string;
+  name?: string;
+  origin?: string;
   price?: number;
+  stock?: number;
+  style?: string;
+  substyle?: string;
 }
 
 const Wrapper = styled.div`
@@ -41,12 +48,30 @@ const Price = styled.span`
   color: #555;
 `;
 
-const Product: React.FC<ProductProps> = ({ brand, image, price }) => {
+const Product: React.FC<ProductProps> = ({
+  brand,
+  image,
+  price,
+  abv,
+  name,
+  origin,
+  information,
+  stock,
+  style,
+  substyle,
+}) => {
   return (
     <Wrapper>
       <Image src={image} alt={brand} />
       <Name>{brand}</Name>
-      {price && <Price>${price}</Price>}
+      <span>Stock:{stock}</span>
+      <Price>Price: ${price}</Price>
+      {abv && <span>Abv: {abv}</span>}
+      {name && <span>Name: {name}</span>}
+      {origin && <span>Origin: {origin}</span>}
+      {information && <span>{information}</span>}
+      {style && <span>{style}</span>}
+      {substyle && <span>{substyle}</span>}
     </Wrapper>
   );
 };
