@@ -64,8 +64,8 @@ const Product: React.FC<ProductProps> = ({
     <Wrapper>
       <Image src={image} alt={brand} />
       <Name>{brand}</Name>
-      <span>Stock:{stock}</span>
-      <Price>Price: ${price}</Price>
+      {stock && <span>Stock:{stock}</span>}
+      {price && <Price>Price: ${price}</Price>}
       {abv && <span>Abv: {abv}</span>}
       {name && <span>Name: {name}</span>}
       {origin && <span>Origin: {origin}</span>}
