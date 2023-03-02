@@ -41,35 +41,32 @@ const Store: NextPage<StoreProps> = ({ router }) => {
 
   useEffect(() => {
     const getStockPrices = async (skuCode) => getStockPrice(skuCode);
-    const interval = setInterval(async () => {
-      if (product) {
-        // for each SKU, one network call
-        // this can be done using a better way
-        if (product && product.skus) {
-          product.skus.forEach(async (sku) => {
-            // get ONE stock and price, for ONE sku
-            const stockPrice = await getStockPrices(sku.code);
-            setProduct((product) => {
-              // clone from lodash
-              const updatedProduct = _.clone(product);
-              const productSku = updatedProduct.skus.find(
-                (_sku) => _sku.code === sku.code
-              );
-              if (stockPrice && productSku) {
-                productSku.price = stockPrice.price;
-                setStock(stockPrice.stock);
-                setPrice((parseFloat(stockPrice.price) / 100).toFixed(2));
-                productSku.stock = stockPrice.stock;
-              }
+    if (product) {
+      // for each SKU, one network call
+      // this can be done using a better way
+      if (product && product.skus) {
+        product.skus.forEach(async (sku) => {
+          // get ONE stock and price, for ONE sku
+          const stockPrice = await getStockPrices(sku.code);
+          setProduct((product) => {
+            // clone from lodash
+            const updatedProduct = _.clone(product);
+            const productSku = updatedProduct.skus.find(
+              (_sku) => _sku.code === sku.code
+            );
+            if (stockPrice && productSku) {
+              productSku.price = stockPrice.price;
+              setStock(stockPrice.stock);
+              setPrice((parseFloat(stockPrice.price) / 100).toFixed(2));
+              productSku.stock = stockPrice.stock;
+            }
 
-              setInfoProduct(updatedProduct);
-              return updatedProduct;
-            });
+            setInfoProduct(updatedProduct);
+            return updatedProduct;
           });
-        }
+        });
       }
-    }, 5000);
-    return () => clearInterval(interval);
+    }
   }, [product?.id]);
 
   return (
