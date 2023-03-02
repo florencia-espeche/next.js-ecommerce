@@ -42,7 +42,6 @@ const Store: NextPage<StoreProps> = ({ router }) => {
   useEffect(() => {
     const getStockPrices = async (skuCode) => getStockPrice(skuCode);
     if (product) {
-      console.log('PRODUCT 2', product);
       // for each SKU, one network call
       // this can be done using a better way
       if (product && product.skus) {
@@ -57,7 +56,6 @@ const Store: NextPage<StoreProps> = ({ router }) => {
             );
             if (stockPrice && productSku) {
               productSku.price = stockPrice.price;
-              console.log(stockPrice);
               setStock(stockPrice.stock);
               setPrice((parseFloat(stockPrice.price) / 100).toFixed(2));
               productSku.stock = stockPrice.stock;
