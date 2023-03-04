@@ -58,7 +58,6 @@ const Store: NextPage<StoreProps> = ({ product }) => {
     getStockPriceAsync();
     const interval = setInterval(() => {
       getStockPriceAsync();
-      console.log('333');
     }, 5000);
     return () => clearInterval(interval);
   }, [product]);
