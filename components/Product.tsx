@@ -14,7 +14,7 @@ interface ProductProps {
   substyle?: string;
 }
 
-const Wrapper = styled.div<{ hasInformation: boolean }>`
+const Wrapper = styled.div<{ hasInformation?: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -28,10 +28,14 @@ const Wrapper = styled.div<{ hasInformation: boolean }>`
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   cursor: pointer;
 
-  ${(props) =>
-    props.hasInformation &&
+  ${({ hasInformation }) =>
+    hasInformation &&
     css`
       width: 500px;
+      @media (max-width: 500px) {
+        width: 100%;
+        padding: 16px 8px;
+      }
     `}
 `;
 
