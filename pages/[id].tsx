@@ -27,6 +27,7 @@ interface Product {
 interface StoreProps {
   product: Product;
 }
+
 const Main = styled.main`
   display: flex;
   flex: 1;
@@ -41,34 +42,48 @@ const Main = styled.main`
 const Store: NextPage<StoreProps> = ({ product }) => {
   const [stock, setStock] = useState(0);
   const [price, setPrice] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  const getStockPriceAsync = async () => {
+    const sku = product.skus[0];
+    const stockPrice = await getStockPrice(sku.code);
+    if (stockPrice) {
+      setStock(stockPrice.stock);
+      setPrice(stockPrice.price / 100);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const sku = product.skus[0];
-    const getStockPriceAsync = async () => {
-      const stockPrice = await getStockPrice(sku.code);
-      if (stockPrice) {
-        setStock(stockPrice.stock);
-        setPrice(stockPrice.price / 100);
-      }
-    };
     getStockPriceAsync();
+    const interval = setInterval(() => {
+      getStockPriceAsync();
+      console.log('333');
+    }, 5000);
+    return () => clearInterval(interval);
   }, [product]);
 
   return (
     <Main>
-      <Product
-        abv={product.abv}
-        brand={product.brand}
-        image={product.image}
-        name={product.name}
-        origin={product.origin}
-        information={product.information}
-        stock={stock}
-        price={price}
-        style={product.styles}
-        substyle={product.substyle}
-      />
-      <Link href='/'>Volver a Home</Link>
+      {loading ? (
+        <p>Cargando información de stock y precio...</p>
+      ) : (
+        <>
+          <Product
+            abv={product.abv}
+            brand={product.brand}
+            image={product.image}
+            name={product.name}
+            origin={product.origin}
+            information={product.information}
+            stock={stock}
+            price={price}
+            style={product.styles}
+            substyle={product.substyle}
+          />
+          <Link href='/'>Volver a Home</Link>
+        </>
+      )}
     </Main>
   );
 };
