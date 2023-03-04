@@ -17,8 +17,8 @@ interface Product {
   brand: string;
   image: string;
   name: string;
-  origins: string;
-  informations: string;
+  origin: string;
+  information: string;
   skus: Sku[];
   styles: string;
   substyle: string;
@@ -61,8 +61,8 @@ const Store: NextPage<StoreProps> = ({ product }) => {
         brand={product.brand}
         image={product.image}
         name={product.name}
-        origin={product.origins}
-        information={product.informations}
+        origin={product.origin}
+        information={product.information}
         stock={stock}
         price={price}
         style={product.styles}

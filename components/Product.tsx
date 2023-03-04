@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 interface ProductProps {
   abv?: string;
@@ -14,7 +14,7 @@ interface ProductProps {
   substyle?: string;
 }
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ hasInformation: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -27,6 +27,12 @@ const Wrapper = styled.div`
   border-radius: 8px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   cursor: pointer;
+
+  ${(props) =>
+    props.hasInformation &&
+    css`
+      width: 500px;
+    `}
 `;
 
 const Image = styled.img`
@@ -61,7 +67,7 @@ const Product: React.FC<ProductProps> = ({
   substyle,
 }) => {
   return (
-    <Wrapper>
+    <Wrapper hasInformation={!!information}>
       <Image src={image} alt={brand} />
       <Name>{brand}</Name>
       {stock && <span>Stock:{stock}</span>}
