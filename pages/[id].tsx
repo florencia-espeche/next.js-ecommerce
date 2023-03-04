@@ -1,17 +1,32 @@
-import type { NextPage } from 'next';
-import { NextRouter, withRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import type { GetServerSideProps, NextPage } from 'next';
 import Link from 'next/link';
 import styled from 'styled-components';
-import { useEffect, useState } from 'react';
+import Product from '../components/Product';
 import { getProductById } from './services/productServise';
 import { getStockPrice } from './services/stockPriceService';
-import Product from '../components/Product';
-import _ from 'lodash';
 
-interface StoreProps {
-  router: NextRouter;
+interface Sku {
+  code: string;
+  price: number;
+  stock: number;
 }
 
+interface Product {
+  abv: string;
+  brand: string;
+  image: string;
+  name: string;
+  origins: string;
+  informations: string;
+  skus: Sku[];
+  styles: string;
+  substyle: string;
+}
+
+interface StoreProps {
+  product: Product;
+}
 const Main = styled.main`
   display: flex;
   flex: 1;
@@ -23,69 +38,52 @@ const Main = styled.main`
   align-items: center;
 `;
 
-const Store: NextPage<StoreProps> = ({ router }) => {
-  const productCode = router.query.id.split('-')[0];
-
-  const [product, setProduct] = useState({});
-  const [infoProduct, setInfoProduct] = useState({});
+const Store: NextPage<StoreProps> = ({ product }) => {
   const [stock, setStock] = useState(0);
   const [price, setPrice] = useState(0);
 
   useEffect(() => {
-    const getProduct = async (id) => {
-      const product = await getProductById(id);
-      setProduct(product);
-    };
-    getProduct(productCode);
-  }, [productCode]);
-
-  useEffect(() => {
-    const getStockPrices = async (skuCode) => getStockPrice(skuCode);
-    if (product) {
-      // for each SKU, one network call
-      // this can be done using a better way
-      if (product && product.skus) {
-        product.skus.forEach(async (sku) => {
-          // get ONE stock and price, for ONE sku
-          const stockPrice = await getStockPrices(sku.code);
-          setProduct((product) => {
-            // clone from lodash
-            const updatedProduct = _.clone(product);
-            const productSku = updatedProduct.skus.find(
-              (_sku) => _sku.code === sku.code
-            );
-            if (stockPrice && productSku) {
-              productSku.price = stockPrice.price;
-              setStock(stockPrice.stock);
-              setPrice((parseFloat(stockPrice.price) / 100).toFixed(2));
-              productSku.stock = stockPrice.stock;
-            }
-
-            setInfoProduct(updatedProduct);
-            return updatedProduct;
-          });
-        });
+    const sku = product.skus[0];
+    const getStockPriceAsync = async () => {
+      const stockPrice = await getStockPrice(sku.code);
+      if (stockPrice) {
+        setStock(stockPrice.stock);
+        setPrice(stockPrice.price / 100);
       }
-    }
-  }, [product?.id]);
+    };
+    getStockPriceAsync();
+  }, [product]);
 
   return (
     <Main>
       <Product
-        abv={infoProduct.abv}
-        brand={infoProduct.brand}
-        image={infoProduct.image}
-        name={infoProduct.name}
-        origin={infoProduct.origins}
-        information={infoProduct.informations}
+        abv={product.abv}
+        brand={product.brand}
+        image={product.image}
+        name={product.name}
+        origin={product.origins}
+        information={product.informations}
         stock={stock}
         price={price}
-        style={infoProduct.styles}
-        substyle={infoProduct.substyle}
+        style={product.styles}
+        substyle={product.substyle}
       />
       <Link href='/'>Volver a Home</Link>
     </Main>
   );
 };
 
-export default withRouter(Store);
+export default Store;
+
+export const getServerSideProps: GetServerSideProps<StoreProps> = async (
+  context
+) => {
+  const { id } = context.query;
+  const productCode = Array.isArray(id)
+    ? id[0].split('-')[0]
+    : id.split('-')[0];
+  const product = await getProductById(productCode);
+  return {
+    props: { product },
+  };
+};
