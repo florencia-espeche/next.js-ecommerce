@@ -12,7 +12,7 @@ interface Sku {
   stock: number;
 }
 
-interface Product {
+interface ProductProps {
   abv: string;
   brand: string;
   image: string;
@@ -25,7 +25,7 @@ interface Product {
 }
 
 interface StoreProps {
-  product: Product;
+  product: ProductProps;
 }
 
 const Main = styled.main`
@@ -56,10 +56,6 @@ const Store: NextPage<StoreProps> = ({ product }) => {
 
   useEffect(() => {
     getStockPriceAsync();
-    const interval = setInterval(() => {
-      getStockPriceAsync();
-    }, 5000);
-    return () => clearInterval(interval);
   }, [product]);
 
   return (
